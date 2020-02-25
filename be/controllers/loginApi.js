@@ -22,9 +22,26 @@ module.exports.register = async (login,password,email)=>{
     };
 }
 
-module.exports.createTokens = async function(user){
-    console.log(user.id);
-    let token = await jwt.sign({id:user.id},keys.tokenSecret,{ expiresIn: 1800000 });
-    let refreshToken = await jwt.sign({id:user.id},keys.refreshSecret, {expiresIn: 1000 * 60 * 60 * 24 *3});
+module.exports.createTokens = async function(id){
+    // console.log(user.id);
+    let token = await jwt.sign({id:id},keys.tokenSecret,{ expiresIn: 1800000 });
+    let refreshToken = await jwt.sign({id:id},keys.refreshSecret, {expiresIn: 1000 * 60 * 60 * 24 *3});
     return {token, refreshToken};
+}
+
+module.exports.validateTokens = async function(cookies){
+    let decoded = await jwt.decode(cookies.rToken);
+    try{
+        let result = await UserModel.findOne({_id:decoded.id});
+        if(result._id){  
+            return {"status":"OK","payload":{id:result._id}};
+        }else{
+            return {status:"err", payload:'_id not exist on db'};
+        }
+
+    }
+    //catch if decoding were wrong and have not _id
+    catch(err){
+        return {status:"err", payload:"decoded cookie have not _id"};
+    };
 }

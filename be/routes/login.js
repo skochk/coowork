@@ -29,7 +29,7 @@ router.post('/registration', function(req,res){
         
         //check if registration successfully
         if(newUserData instanceof Object){
-            let tokens = await loginController.createTokens(newUserData);
+            let tokens = await loginController.createTokens(newUserData._id);
             res.cookie('token',tokens.token)
             .cookie('rToken',tokens.refreshToken);
         }

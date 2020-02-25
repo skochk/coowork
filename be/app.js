@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 let cors = require('cors');
+let authCheck = require('./middlewares/authCheck');
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
@@ -35,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors());
 app.use('/', indexRouter);
-app.use('/user', userRouter);
+app.use('/user', authCheck, userRouter);
 app.use('/login', loginRouter);
 
 
